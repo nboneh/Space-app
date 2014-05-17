@@ -172,8 +172,11 @@ public class AndroidGraphics implements Graphics {
 		while(angle >= 360){
 			angle -= 360; 
 		}
+		while(angle < 0){
+			angle += 360;
+		}
 		
-		String key = srcX + srcY + srcWidth + srcHeight + angle + ""; 
+		String key = srcX + "" + srcY +"" + srcWidth +"" + srcHeight+ "" + angle + ""; 
 		Bitmap bitmap = pixmap.getPreRendered(key);
 		if(bitmap == null){
 			bitmap = Bitmap.createBitmap(((AndroidPixmap) pixmap).bitmap, srcX, srcY, srcWidth, srcHeight, ROTATING_MATRICES[angle], false);

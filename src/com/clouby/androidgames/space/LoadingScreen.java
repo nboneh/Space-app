@@ -6,6 +6,7 @@ import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Graphics.PixmapFormat;
 import com.badlogic.androidgames.framework.Pixmap;
 import com.badlogic.androidgames.framework.Screen;
+import com.clouby.androidgames.space.object.World;
 
 public class LoadingScreen extends Screen{
 
@@ -25,6 +26,7 @@ public class LoadingScreen extends Screen{
 			Assets.background = g.newPixmap("background.png", PixmapFormat.RGB565);
 			Assets.playerSpaceShip = g.newPixmap("playerspaceship.png", PixmapFormat.ARGB4444);
 			Assets.basicMissle = g.newPixmap("basicmissle.png", PixmapFormat.ARGB4444);
+
 			try {
 				Thread.sleep(2000L);
 			} catch (InterruptedException e) {

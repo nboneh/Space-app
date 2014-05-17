@@ -3,49 +3,30 @@ package com.clouby.androidgames.space.object;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 import com.badlogic.androidgames.framework.Graphics;
 import com.clouby.androidgames.space.Assets;
 import com.clouby.androidgames.space.object.Missle.MissleType;
 
 public class Spaceship extends WorldObject {
 
-	private List<Missle> missles; 
+	private List< Missle> missles; 
+	private int shootingFrame = 3;
 	Spaceship(int x, int y, int speed) {
-		super(x, y, 1, Assets.playerSpaceShip, speed,0 ,0);
+		super(x, y, Assets.playerSpaceShip, speed,1,4,4);
 		missles = new ArrayList<Missle>();
 	}
 
 	@Override
-	public void setDeltas(float deltaX, float deltaY){
-		if(state != State.INTRO && state != State.DYING)
-			super.setDeltas(deltaX, deltaY);
-
-	}
-	@Override 
-	void updateAngle(int refX, int refY){ 
-		if(state != State.INTRO && state != State.DYING)
-			super.updateAngle(refX, refY);
-	}
-
-	@Override
 	void update(float deltaTime){
+		super.update(deltaTime);
 		switch(state){
-		case INTRO:
-			angle += deltaTime * 200;
-			alpha += deltaTime * 40; 
-			if(alpha >= MAX_ALPHA){
-				alpha = MAX_ALPHA;
-				state = State.NORMAL;
-			}
-			break; 
 		case NORMAL:
-			super.update(deltaTime);
 			break;
 		case ATTACKING:
+			if(tic && frame == shootingFrame){
 			createMissle();
 			state = State.NORMAL;
+			}
 			break; 
 		default:
 			break; 
@@ -54,6 +35,7 @@ public class Spaceship extends WorldObject {
 		for(int i = 0; i < numOfMissles; i++){
 			missles.get(i).update(deltaTime);
 		}
+		
 	}
 	
 	@Override
@@ -65,13 +47,28 @@ public class Spaceship extends WorldObject {
 		}
 	}
 	
-	void playIntro(){
-		state = State.INTRO;
-		alpha = 0; 
+	@Override 
+	boolean hit(WorldObject object){
+		if(hitByBody(object))
+			return true;
+		return hitByMissles(object);
 	}
-	void fire(){
-		state = State.ATTACKING;
+	
+	boolean hitByMissles(WorldObject object){
+		int numOfMissles = missles.size();
+		for(int i = 0; i < numOfMissles; i++){
+			WorldObject missle = missles.get(i);
+			if( missle.hit(object)){
+				return true ;
+			}
+		}
+		return false; 
 	}
+	
+	boolean hitByBody(WorldObject object){
+		return super.hit(object);
+	}
+
 	
 	private void createMissle(){
 		int hyp = height/2; 
@@ -83,7 +80,7 @@ public class Spaceship extends WorldObject {
 		int numOfMissles = missles.size();
 		for(int i = 0; i < numOfMissles; i++){
 			Missle missle = missles.get(i);
-			if(missles.get(i).isDead()){
+			if(missle.isDead()){
 				Missle.recycleMissle(MissleType.BASIC, nostrilX, nostrilY, angle, missle);
 				return;
 			}
