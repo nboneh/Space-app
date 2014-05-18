@@ -31,5 +31,5 @@ public interface Graphics {
     public int getHeight();
 
 	public void drawPixmap(Pixmap pixmap, int x, int y, int srcX, int srcY,
-			int width, int height, int angle, int alpha);
+			int width, int height, int angle);
 }

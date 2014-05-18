@@ -5,10 +5,7 @@ import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Pixmap;
 import com.clouby.androidgames.space.Settings;
 
-class WorldObject {
-
-	protected final static int MAX_ALPHA = 255; 
-	private int fadeSpeed = 60; 
+abstract class WorldObject {
 
 	private Pixmap pixmap; 
 
@@ -26,7 +23,6 @@ class WorldObject {
 	protected int frame; 
 	protected float angle; 
 	protected int speed; 
-	protected float alpha; 
 	private float deltaX;
 	private float deltaY; 
 	protected boolean dead; 
@@ -35,8 +31,6 @@ class WorldObject {
 	private int numOfFrames;
 	private float ticChecker; 
 	protected boolean tic; 
-	private boolean fadeIn;
-	private boolean fadeOut; 
 	private int frameInNextTic = -1; 
 
 	WorldObject(int x, int y, Pixmap pixmap, int speed
@@ -66,17 +60,13 @@ class WorldObject {
 		leftBoundary = -width;
 		rightBoundary = Settings.WORLD_WIDTH;
 		bottomBoundary = Settings.WORLD_HEIGHT;
-		alpha = MAX_ALPHA; 
 		state = State.NORMAL; 
 		distanceTraveled = 0 ; 
 		dead = false; 
-		fadeSpeed = 60;
 		this.attackFrame = attackFrame;
 		this.dyingFrame = deathFrame; 
 		ticChecker = 0;
 		this.numOfFrames = numOfFrames; 
-		fadeIn = false;
-		fadeOut = false; 
 		tic = false;
 	}
 
@@ -112,24 +102,6 @@ class WorldObject {
 	void update(float deltaTime){
 
 		if(!dead){
-
-			if(fadeIn && alpha < MAX_ALPHA ){
-				if(alpha < WorldObject.MAX_ALPHA){
-					alpha += deltaTime * fadeSpeed;
-					if(alpha >= MAX_ALPHA)
-						fadeIn = false; 
-					setAlpha(alpha);
-				} 
-			}
-
-			if(fadeOut && alpha > 0 ){
-				alpha -= deltaTime * fadeSpeed;
-				if(alpha <= 0)
-					fadeOut = false;
-				setAlpha(alpha);
-			}
-
-
 			ticChecker += deltaTime;	
 			if(ticChecker >= World.TIC_TIME){
 				if(frameInNextTic >= 0){
@@ -225,6 +197,7 @@ class WorldObject {
 		int objX = object.getX();
 		int objY = object.getY();
 		if (state != State.DYING
+				&& object.state != State.DYING
 				&& (x +width > objX) 
 				&& (x <  objX+ object.getWidth())
 				&& (y +height > objY )  
@@ -237,7 +210,7 @@ class WorldObject {
 
 	void present(Graphics g){
 		if(!dead){
-			g.drawPixmap(pixmap, (int)x, (int)y, (frame * width  + frame ), 0, width, height, (int)angle, (int) alpha);
+			g.drawPixmap(pixmap, (int)x, (int)y, (frame * width  + frame ), 0, width, height, (int)angle);
 		}
 	}
 
@@ -272,19 +245,12 @@ class WorldObject {
 		}
 	}
 
-	void setAlpha(float alpha){
-		if(alpha > MAX_ALPHA)
-			alpha = MAX_ALPHA;
-		else if(alpha < 0)
-			alpha = 0; 
-		this.alpha = alpha; 
-	}
 
-	void putInCenterX(){
+	void centerInX(){
 		x = rightBoundary/2 - width/2; 
 	}
 
-	void putInCenterY(){
+	void centerInY(){
 		y = bottomBoundary/2 - height/2; 
 	}
 
@@ -292,17 +258,5 @@ class WorldObject {
 		NORMAL, 
 		ATTACKING, 
 		DYING; 
-	}
-
-	void fadeIn(){
-		alpha = 0;
-		fadeIn = true;
-	}
-
-	boolean isFadeIn(){
-		return fadeIn; 
-	}
-	void fadeOut(){
-		fadeOut = true; 
 	}
 }

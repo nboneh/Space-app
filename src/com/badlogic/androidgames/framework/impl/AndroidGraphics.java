@@ -165,9 +165,7 @@ public class AndroidGraphics implements Graphics {
 
 	@Override
 	public void drawPixmap(Pixmap pixmap, int x, int y, int srcX, int srcY,
-			int srcWidth, int srcHeight, int angle, int alpha) {
-		paint.setColor(Color.WHITE);
-		paint.setAlpha(alpha);
+			int srcWidth, int srcHeight, int angle) {
 		
 		while(angle >= 360){
 			angle -= 360; 
