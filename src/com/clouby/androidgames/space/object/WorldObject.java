@@ -3,6 +3,7 @@ package com.clouby.androidgames.space.object;
 
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Pixmap;
+import com.badlogic.androidgames.framework.Sound;
 import com.clouby.androidgames.space.Assets;
 import com.clouby.androidgames.space.Settings;
 
@@ -33,6 +34,8 @@ abstract class WorldObject {
 	private float ticChecker; 
 	protected boolean tic; 
 	private int frameInNextTic = -1; 
+	protected float volume; 
+	private Sound nextSound; 
 
 	WorldObject(int x, int y, Pixmap pixmap, int speed
 			,int attackFrame, int deathFrame, int numOfFrames){
@@ -66,6 +69,7 @@ abstract class WorldObject {
 		ticChecker = 0;
 		this.numOfFrames = numOfFrames; 
 		tic = false;
+		volume = .3f;
 		setState(State.INTRO);
 	}
 
@@ -101,6 +105,10 @@ abstract class WorldObject {
 	void update(float deltaTime){
 
 		if(!dead){
+			if(nextSound != null){
+				nextSound.play(volume);
+				nextSound = null; 
+			}
 			ticChecker += deltaTime;	
 			if(ticChecker >= World.TIC_TIME){
 				if(frameInNextTic >= 0){
@@ -236,7 +244,7 @@ abstract class WorldObject {
 			switch(state){
 			case INTRO:
 				//Intro is death in reverse 
-				Assets.forming.play(1);
+				nextSound = Assets.forming;
 				dead = false; 
 				frame = numOfFrames; 
 				frameInNextTic = (numOfFrames -1); 
@@ -245,7 +253,7 @@ abstract class WorldObject {
 				frameInNextTic = attackFrame; 
 				break;
 			case DYING:
-				Assets.deForming.play(1);
+				nextSound = Assets.deForming;
 				frameInNextTic = dyingFrame; 
 				break;
 			case NORMAL:
