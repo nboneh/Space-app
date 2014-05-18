@@ -24,7 +24,7 @@ public class LoadingScreen extends Screen{
 		else{
 			Assets.background = g.newPixmap("background.png", PixmapFormat.RGB565);
 			Assets.playerSpaceShip = g.newPixmap("playerspaceship.png", PixmapFormat.ARGB4444);
-			Assets.basicMissle = g.newPixmap("basicmissle.png", PixmapFormat.ARGB4444);
+			Assets.basicPlayerMissle = g.newPixmap("basicplayermissle.png", PixmapFormat.ARGB4444);
 			Assets.playButton = g.newPixmap("playbutton.png", PixmapFormat.ARGB4444);
 			Assets.highscoreButton = g.newPixmap("highscorebutton.png", PixmapFormat.ARGB4444);
 			Assets.backButton = g.newPixmap("backbutton.png", PixmapFormat.ARGB4444);
@@ -36,7 +36,7 @@ public class LoadingScreen extends Screen{
 				e.printStackTrace();
 			}
 			
-			game.setScreen(new MainMenuScreen(game));
+			game.setScreen(new GameScreen(game));
 		}
 	}
 

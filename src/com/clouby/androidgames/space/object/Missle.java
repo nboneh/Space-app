@@ -5,7 +5,7 @@ import com.clouby.androidgames.space.Assets;
 
 public class Missle extends WorldObject {
 	enum MissleType{
-		BASIC(300, 300, Assets.basicMissle, 0,0, 1);
+		BASICPLAYER(300, 300, Assets.basicPlayerMissle, 1,1, 3);
 
 		private int speed;
 		private int totalDistance;
@@ -57,14 +57,15 @@ public class Missle extends WorldObject {
 	void update(float deltaTime){
 		super.update(deltaTime);
 		if(distanceTraveled >=totalDistance ){
-			dead =true;
+			setState(State.DYING);
+			speed = 0; 
 		}
 	}
 
 	@Override
 	boolean hit(WorldObject object){
 		if(super.hit(object)){
-			dead = true; 
+			setState(State.DYING);
 			return true;
 		} return false; 
 	}

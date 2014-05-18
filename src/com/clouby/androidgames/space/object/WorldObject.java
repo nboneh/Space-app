@@ -51,7 +51,6 @@ abstract class WorldObject {
 		this.y = y; 
 		this.height = pixmap.getHeight();	
 		this.pixmap = pixmap; 
-		frame = 0;
 		angle = 0; 
 		this.speed = speed; 
 		deltaX =0;
@@ -60,14 +59,13 @@ abstract class WorldObject {
 		leftBoundary = -width;
 		rightBoundary = Settings.WORLD_WIDTH;
 		bottomBoundary = Settings.WORLD_HEIGHT;
-		state = State.NORMAL; 
 		distanceTraveled = 0 ; 
-		dead = false; 
 		this.attackFrame = attackFrame;
 		this.dyingFrame = deathFrame; 
 		ticChecker = 0;
 		this.numOfFrames = numOfFrames; 
 		tic = false;
+		setState(State.INTRO);
 	}
 
 	int getWidth() {
@@ -109,14 +107,21 @@ abstract class WorldObject {
 					frameInNextTic = -1; 
 				}
 				else
-					frame++;
+					if(state != State.INTRO)
+						frame++;
+					else 
+						frame--;
 				switch(state){
+				case INTRO:
+					if(frame <= (dyingFrame ))
+						setState(State.NORMAL);
+					break; 
 				case NORMAL:
 					if(frame >= attackFrame)
 						frame = 0; 
 					break;
 				case ATTACKING:
-					if(frame >= dyingFrame)
+					if(frame >= (dyingFrame -1))
 						setState(State.NORMAL);
 					break;
 				case DYING:
@@ -209,7 +214,7 @@ abstract class WorldObject {
 	}
 
 	void present(Graphics g){
-		if(!dead){
+		if(!dead && frame < numOfFrames){
 			g.drawPixmap(pixmap, (int)x, (int)y, (frame * width  + frame ), 0, width, height, (int)angle);
 		}
 	}
@@ -228,6 +233,12 @@ abstract class WorldObject {
 
 		if(this.state != state){
 		switch(state){
+		case INTRO:
+			//Intro is death in reverse 
+			dead = false; 
+			frame = numOfFrames; 
+			frameInNextTic = (numOfFrames -1); 
+			break;
 		case ATTACKING:
 			frameInNextTic = attackFrame; 
 			break;
@@ -255,8 +266,13 @@ abstract class WorldObject {
 	}
 
 	enum State {
+		INTRO,
 		NORMAL, 
 		ATTACKING, 
 		DYING; 
+	}
+
+	void setY(int y) {
+		this.y = y; 
 	}
 }
