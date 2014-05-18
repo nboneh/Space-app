@@ -1,6 +1,7 @@
 package com.clouby.androidgames.space;
 
 
+import com.badlogic.androidgames.framework.Audio;
 import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Graphics.PixmapFormat;
@@ -19,6 +20,7 @@ public class LoadingScreen extends Screen{
 	@Override
 	public void update(float deltaTime) {
 		Graphics g = game.getGraphics();
+		Audio a = game.getAudio();
 		if(!logoDisplayed)
 			developerLogo = g.newPixmap("cloubylogo.png",PixmapFormat.ARGB8888);
 		else{
@@ -29,6 +31,9 @@ public class LoadingScreen extends Screen{
 			Assets.highscoreButton = g.newPixmap("highscorebutton.png", PixmapFormat.ARGB4444);
 			Assets.backButton = g.newPixmap("backbutton.png", PixmapFormat.ARGB4444);
 			Assets.title = g.newPixmap("title.png", PixmapFormat.ARGB4444);
+			Assets.basicMissleFire = a.newSound("basicmisslefire.ogg");
+			Assets.forming = a.newSound("forming.ogg");
+			Assets.deForming = a.newSound("deforming.ogg");
 
 			try {
 				Thread.sleep(2000L);

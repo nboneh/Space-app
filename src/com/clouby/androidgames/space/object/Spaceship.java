@@ -61,6 +61,7 @@ public class Spaceship extends WorldObject {
 
 
 	private void createMissle(){
+		Assets.basicMissleFire.play(1);
 		int hyp = height/2; 
 		float midX = x + width/2; 
 		float midY = y + hyp;

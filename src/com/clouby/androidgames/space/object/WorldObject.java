@@ -3,6 +3,7 @@ package com.clouby.androidgames.space.object;
 
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Pixmap;
+import com.clouby.androidgames.space.Assets;
 import com.clouby.androidgames.space.Settings;
 
 abstract class WorldObject {
@@ -232,27 +233,29 @@ abstract class WorldObject {
 	void setState(State state){
 
 		if(this.state != state){
-		switch(state){
-		case INTRO:
-			//Intro is death in reverse 
-			dead = false; 
-			frame = numOfFrames; 
-			frameInNextTic = (numOfFrames -1); 
-			break;
-		case ATTACKING:
-			frameInNextTic = attackFrame; 
-			break;
-		case DYING:
-			frameInNextTic = dyingFrame; 
-			break;
-		case NORMAL:
-			frameInNextTic = 0; 
-			break;
-		default:
-			break;
+			switch(state){
+			case INTRO:
+				//Intro is death in reverse 
+				Assets.forming.play(1);
+				dead = false; 
+				frame = numOfFrames; 
+				frameInNextTic = (numOfFrames -1); 
+				break;
+			case ATTACKING:
+				frameInNextTic = attackFrame; 
+				break;
+			case DYING:
+				Assets.deForming.play(1);
+				frameInNextTic = dyingFrame; 
+				break;
+			case NORMAL:
+				frameInNextTic = 0; 
+				break;
+			default:
+				break;
 
-		}
-		this.state = state; 
+			}
+			this.state = state; 
 		}
 	}
 
