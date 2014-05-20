@@ -1,5 +1,7 @@
 package com.clouby.androidgames.space;
 
+import android.graphics.Typeface;
+
 import com.badlogic.androidgames.framework.Pixmap;
 import com.badlogic.androidgames.framework.Sound;
 
@@ -11,6 +13,8 @@ public class Assets {
 	public static Pixmap highscoreButton; 
 	public static Pixmap backButton; 
 	public static Pixmap title;
+	public static Pixmap basicEnemy;
+	public static Typeface font; 
 	public static Sound basicMissleFire; 
 	public static Sound forming; 
 	public static Sound deForming; 

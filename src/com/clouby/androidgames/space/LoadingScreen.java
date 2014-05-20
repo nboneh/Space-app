@@ -31,6 +31,8 @@ public class LoadingScreen extends Screen{
 			Assets.highscoreButton = g.newPixmap("highscorebutton.png", PixmapFormat.ARGB4444);
 			Assets.backButton = g.newPixmap("backbutton.png", PixmapFormat.ARGB4444);
 			Assets.title = g.newPixmap("title.png", PixmapFormat.ARGB4444);
+			Assets.basicEnemy = g.newPixmap("basicenemy.png", PixmapFormat.ARGB4444);
+			Assets.font = g.newTypeFace("font.ttf");
 			Assets.basicMissleFire = a.newSound("basicmisslefire.ogg");
 			Assets.forming = a.newSound("forming.ogg");
 			Assets.deForming = a.newSound("deforming.ogg");

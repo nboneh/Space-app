@@ -10,7 +10,7 @@ import com.clouby.androidgames.space.Settings;
 abstract class WorldObject {
 
 	private Pixmap pixmap; 
-
+	
 	private int topBoundary;
 	private int leftBoundary;
 	private int rightBoundary;
@@ -20,6 +20,8 @@ abstract class WorldObject {
 	protected State state; 
 	protected int width;
 	protected int height;
+	protected int presentWidth;
+	protected int presentHeight;
 	protected float x;
 	protected float y;
 	protected int frame; 
@@ -34,26 +36,32 @@ abstract class WorldObject {
 	private float ticChecker; 
 	protected boolean tic; 
 	private int frameInNextTic = -1; 
+	protected int lives = 1;
 	protected float volume; 
-	private Sound nextSound; 
+	protected Sound nextSound; 
+	protected float size; 
+
 
 	WorldObject(int x, int y, Pixmap pixmap, int speed
-			,int attackFrame, int deathFrame, int numOfFrames){
-		init( x, y, pixmap, speed, attackFrame,  deathFrame,  numOfFrames);
+			,int attackFrame, int deathFrame, int numOfFrames, float size){
+		init( x, y, pixmap, speed, attackFrame,  deathFrame,  numOfFrames, size);
 	}
 
 	void recycle(int x, int y, Pixmap pixmap, int speed
-			,int attackFrame, int deathFrame, int numOfFrames){
-		init( x, y, pixmap, speed,  attackFrame,  deathFrame,  numOfFrames);
+			,int attackFrame, int deathFrame, int numOfFrames, float size){
+		init( x, y, pixmap, speed,  attackFrame,  deathFrame,  numOfFrames, size);
 
 	}
 
 	void init(int x, int y, Pixmap pixmap, int speed
-			,int attackFrame, int deathFrame, int numOfFrames){
-		this.width = (pixmap.getWidth() - numOfFrames + 1)/numOfFrames;
+			,int attackFrame, int deathFrame, int numOfFrames, float size){
+		this.size=  size; 
+		this.presentWidth = (pixmap.getWidth() - numOfFrames + 1)/numOfFrames;
 		this.x = x;
 		this.y = y; 
-		this.height = pixmap.getHeight();	
+		this.presentHeight = pixmap.getHeight();	
+		height = (int) (presentHeight * size);
+		width = (int) (presentWidth * size);
 		this.pixmap = pixmap; 
 		angle = 0; 
 		this.speed = speed; 
@@ -89,17 +97,6 @@ abstract class WorldObject {
 	public void setDeltas(float deltaX, float deltaY){
 		this.deltaX = deltaX;
 		this.deltaY = deltaY; 
-
-		if(deltaY > 1)
-			deltaY = 1;
-		else if(deltaY < -1)
-			deltaY = -1;
-
-		if(deltaX > 1)
-			deltaX = 1;
-		else if(deltaX < -1)
-			deltaX = -1;
-
 	}
 
 	void update(float deltaTime){
@@ -134,7 +131,9 @@ abstract class WorldObject {
 						setState(State.NORMAL);
 					break;
 				case DYING:
-					if(frame >= (numOfFrames)){
+					if(lives > 0)
+						setState(State.NORMAL);
+					else if(frame >= (numOfFrames)){
 						frame = (numOfFrames -1);
 						dead = true; 
 					}
@@ -212,10 +211,10 @@ abstract class WorldObject {
 		int objY = object.getY();
 		if (state != State.DYING
 				&& object.state != State.DYING
-				&& (x +width > objX) 
-				&& (x <  objX+ object.getWidth())
-				&& (y +height > objY )  
-				&& (y < objY+object.getHeight())){
+				&& (x +(width) > objX) 
+				&& (x <  objX+ (object.getWidth()))
+				&& (y +(height) > objY )  
+				&& (y < objY+(object.getHeight()))){
 			object.setState(State.DYING);
 			return true;
 		}
@@ -224,7 +223,7 @@ abstract class WorldObject {
 
 	void present(Graphics g){
 		if(!dead && frame < numOfFrames){
-			g.drawPixmap(pixmap, (int)x, (int)y, (frame * width  + frame ), 0, width, height, (int)angle);
+			g.drawPixmap(pixmap, (int)x, (int)y, (frame * presentWidth  + frame ), 0, presentWidth, presentHeight, (int)angle, size);
 		}
 	}
 
@@ -253,8 +252,10 @@ abstract class WorldObject {
 				frameInNextTic = attackFrame; 
 				break;
 			case DYING:
-				nextSound = Assets.deForming;
-				frameInNextTic = dyingFrame; 
+				lives--;
+				if(lives < 1)
+					nextSound = Assets.deForming;
+				frameInNextTic = dyingFrame;
 				break;
 			case NORMAL:
 				frameInNextTic = 0; 
@@ -282,8 +283,35 @@ abstract class WorldObject {
 		ATTACKING, 
 		DYING; 
 	}
+	
+	void setX(int x){
+		this.x = x; 
+	}
 
 	void setY(int y) {
 		this.y = y; 
 	}
+	void setLives(int lives){
+		this.lives = lives; 
+	}
+	
+	int getTopBoundary() {
+		return topBoundary;
+	}
+
+	int getLeftBoundary() {
+		return leftBoundary;
+	}
+
+
+	int getRightBoundary() {
+		return rightBoundary;
+	}
+
+
+
+	int getBottomBoundary() {
+		return bottomBoundary;
+	}
+
 }

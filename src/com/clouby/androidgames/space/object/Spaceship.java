@@ -5,14 +5,13 @@ import java.util.List;
 
 import com.badlogic.androidgames.framework.Graphics;
 import com.clouby.androidgames.space.Assets;
-import com.clouby.androidgames.space.object.Missle.MissleType;
 
 public class Spaceship extends WorldObject {
 
 	private List< Missle> missles; 
 	private int shootingFrame = 3;
 	Spaceship(int x, int y, int speed) {
-		super(x, y, Assets.playerSpaceShip, speed,1,4,7);
+		super(x, y, Assets.playerSpaceShip, speed,1,4,7, 1);
 		missles = new ArrayList<Missle>();
 	}
 
@@ -24,8 +23,9 @@ public class Spaceship extends WorldObject {
 		int numOfMissles = missles.size();
 		for(int i = 0; i < numOfMissles; i++){
 			missles.get(i).update(deltaTime);
+			if(dead)
+				missles.get(i).setState(State.DYING);
 		}
-
 	}
 
 	@Override
@@ -72,12 +72,12 @@ public class Spaceship extends WorldObject {
 		for(int i = 0; i < numOfMissles; i++){
 			Missle missle = missles.get(i);
 			if(missle.isDead()){
-				Missle.recycleMissle(MissleType.BASICPLAYER, nostrilX, nostrilY, angle, missle);
+				missle.reuse(nostrilX,nostrilY, angle);
 				return;
 			}
 
 		}
-		missles.add(Missle.createMissle(MissleType.BASICPLAYER, nostrilX, nostrilY, angle));
+		missles.add(new Missle(nostrilX, nostrilY, Assets.basicPlayerMissle, angle));
 	}
 
 

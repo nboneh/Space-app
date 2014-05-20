@@ -3,6 +3,8 @@ package com.clouby.androidgames.space.object;
 import java.util.List;
 
 
+import android.graphics.Color;
+
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Input.TouchEvent;
@@ -32,11 +34,17 @@ public class World {
 	//High Score Items
 	private WorldObject backButton; 
 
+	
+	//Enemy Generator
+	private EnemyGenerator enemyGenerator; 
 	private float transitionCounter;
 	private WorldState worldState; 
 
 	final static float TIC_TIME = 0.07f; 
 	final static float TIME_DELAY_TRANSITION = 1f; 
+	private int score = 0; 
+	private int scoreMultiplier = 1; 
+	
 	private static World inst;
 
 	public static World getInst(){
@@ -61,6 +69,7 @@ public class World {
 		backButton = new Button(0,0 , Assets.backButton);
 		backButton.setY(Settings.WORLD_HEIGHT - backButton.getHeight());
 		setWorldState(WorldState.INTRO);
+		enemyGenerator = new EnemyGenerator(playerSpaceship);
 	}
 
 	public void setWorldState(WorldState worldState) {
@@ -75,6 +84,10 @@ public class World {
 			highscoreButton.setState(State.INTRO);
 			break;
 		case GAME:
+			score = 0;
+			setScoreMultiplier(1);
+			enemyGenerator.reset();
+			break; 
 		case HIGHSCORE:
 			backButton.setState(State.INTRO); 
 			break;
@@ -96,6 +109,8 @@ public class World {
 				updateMainMenu(deltaTime); 
 				break;
 			case GAME:
+				updateGame(deltaTime);
+				break;
 			case HIGHSCORE:
 				updateHighscore(deltaTime);
 				break;
@@ -114,6 +129,8 @@ public class World {
 
 		switch(worldState){
 		case GAME:
+			presentGame(g);
+			break; 
 		case HIGHSCORE:
 			presentHighscore( g);
 			break;
@@ -181,8 +198,26 @@ public class World {
 		backButton.present(g);
 	}
 
+	private void updateGame(float deltaTime){
+		enemyGenerator.update(deltaTime);
+		if(playerSpaceship.isDead()){
+			setScoreMultiplier(0);
+			enemyGenerator.destroy();
+			if(enemyGenerator.isDead()){
+				setWorldState(WorldState.INTRO);
+			}
+		}
+			
+	}
+	
+	private void presentGame(Graphics g){
+		enemyGenerator.present(g);
+		g.drawFont(10, 20, 20, "Score: " + score, Color.RED, Assets.font);
+	}
+	
 	private void updatePlayerSpaceship(float deltaTime, Input input){
-		if(worldState != WorldState.INTRO){
+		if(worldState != WorldState.INTRO  ){
+			if(playerSpaceship.state != State.DYING){
 			//Inputs should be flipped 
 			float deltaX =input.getAccelY();
 			//Minus so you can hold the phone tilted
@@ -208,11 +243,21 @@ public class World {
 					break; 
 				}
 			}
+			}
 
 			playerSpaceship.update(deltaTime);
 		}
 
 	}
+
+
+
+	 void incScore(int score) {
+		this.score += score * scoreMultiplier; 
+	}
+	 void setScoreMultiplier(int scoreMultiplier){
+		 this.scoreMultiplier = scoreMultiplier;
+	 }
 
 
 

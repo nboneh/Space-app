@@ -21,8 +21,6 @@ import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Pixmap;
 
 public class AndroidGraphics implements Graphics {
-	private static Matrix[] ROTATING_MATRICES;
-
 
 	AssetManager assets;
 	Bitmap frameBuffer;
@@ -30,15 +28,6 @@ public class AndroidGraphics implements Graphics {
 	Paint paint;
 	Rect srcRect = new Rect();
 	Rect dstRect = new Rect();
-
-	static{
-		ROTATING_MATRICES = new Matrix[360];
-		for(int i = 0; i < 360; i++){
-			Matrix matrix = new Matrix();
-			matrix.postRotate(i);
-			ROTATING_MATRICES[i] = matrix;
-		}
-	}
 
 	public AndroidGraphics(AssetManager assets, Bitmap frameBuffer) {
 		this.assets = assets;
@@ -165,19 +154,16 @@ public class AndroidGraphics implements Graphics {
 
 	@Override
 	public void drawPixmap(Pixmap pixmap, int x, int y, int srcX, int srcY,
-			int srcWidth, int srcHeight, int angle) {
+			int srcWidth, int srcHeight, int angle, float size) {
 		
-		while(angle >= 360){
-			angle -= 360; 
-		}
-		while(angle < 0){
-			angle += 360;
-		}
 		
-		String key = srcX + "" + srcY +"" + srcWidth +"" + srcHeight+ "" + angle + ""; 
+		String key = srcX + "" + srcY +"" + srcWidth +"" + srcHeight+ "" + angle + "" + size; 
 		Bitmap bitmap = pixmap.getPreRendered(key);
 		if(bitmap == null){
-			bitmap = Bitmap.createBitmap(((AndroidPixmap) pixmap).bitmap, srcX, srcY, srcWidth, srcHeight, ROTATING_MATRICES[angle], false);
+			Matrix matrix = new Matrix();
+			matrix.postRotate(angle);
+			matrix.postScale( size,  size);
+			bitmap = Bitmap.createBitmap(((AndroidPixmap) pixmap).bitmap, srcX, srcY, srcWidth, srcHeight,matrix, false);
 			pixmap.insertPreRendered(key, bitmap);
 		}
 		
