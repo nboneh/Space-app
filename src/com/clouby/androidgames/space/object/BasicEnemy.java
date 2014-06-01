@@ -6,21 +6,23 @@ public class BasicEnemy extends WorldObject {
 
 	private int score; 
 
-	BasicEnemy( int speed, float size, int lives) {
+	BasicEnemy( float size,  int lives, int speed,  int angle) {
 		super(0, 0, Assets.basicEnemy, speed, 1, 1, 5, size);
 		nextSound = null; 
 		setState(State.NORMAL);
-		score = (int)( (size + speed/50.0));
-		this.lives = lives; 
+		speed = (int) ((1/size ) * 100);
+		this.angle = angle; 
+		this.lives = lives;
 	}
 
-	void recycle( int speed, float size, int lives){
+	void recycle( float size, int lives, int speed, int angle){
 		super.init(0, 0, Assets.basicEnemy, speed, 1, 1, 5, size);
 		nextSound = null;
 		setState(State.NORMAL);
+		speed = (int) ((1/size ) * 100);
 		this.size = size; 
-		score = (int)((size + speed/50.0));
-		this.lives = lives;
+		this.angle =angle; 
+		this.lives = lives; 
 		dead = false;
 		
 	}
@@ -28,8 +30,11 @@ public class BasicEnemy extends WorldObject {
 	@Override
 	void setState(State state){
 		super.setState(state);
-		if(state == State.DYING)
-			World.getInst().incScore(score);
+		if(state == State.DYING){
+			speed /= 2;
+			if( lives <= 0)
+				World.getInst().incScore(1);
+		}
 
 	}
 

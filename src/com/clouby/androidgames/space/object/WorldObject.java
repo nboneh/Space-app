@@ -220,6 +220,17 @@ abstract class WorldObject {
 		}
 		return false; 
 	}
+	
+	boolean clicked(int finx, int finy){
+		if (state != State.DYING
+				&& (x +(width) > finx) 
+				&& (x <  finx)
+				&& (y +(height) > finy )  
+				&& (y < finy)){
+				return true; 
+		}else
+			return false; 
+	}
 
 	void present(Graphics g){
 		if(!dead && frame < numOfFrames){
@@ -314,4 +325,11 @@ abstract class WorldObject {
 		return bottomBoundary;
 	}
 
+	void setSize(float size){
+		height = (int) (presentHeight * size);
+		width = (int) (presentWidth * size);
+		topBoundary = -height;
+		leftBoundary = -width;
+		this.size = size; 
+	}
 }

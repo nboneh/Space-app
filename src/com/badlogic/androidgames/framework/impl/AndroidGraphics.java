@@ -140,10 +140,19 @@ public class AndroidGraphics implements Graphics {
 	@Override
 	public void drawFont(int x, int y, int size, String text, int color
 			, Typeface font ) {
-		paint.setColor(color);
+		paint.setColor(Color.WHITE);
 		paint.setTextSize(size);
-		paint.setTextAlign(Paint.Align.LEFT);
+		  paint.setStyle(Style.STROKE);
+		  paint.setStrokeWidth(1.25f);
 		canvas.drawText(text, x, y, paint);
+
+		
+		paint.setColor(color);
+		  paint.setAntiAlias(true);
+		paint.setTextSize(size);
+		  paint.setStyle(Style.FILL);
+		canvas.drawText(text, x, y, paint);
+		
 
 	}
 

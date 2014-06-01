@@ -12,9 +12,9 @@ public class EnemyGenerator {
 	private List<BasicEnemy> enemies; 
 	private Random rand;
 	private Spaceship playerSpaceship; 
-	private float ticsToSpawn = 2.0f;
-	private  float ticCounter = 2.0f;
-	private float spawnMultiplier = .999f; 
+	private float ticsToSpawn = 1.2f;
+	private  float ticCounter = .5f;
+	private float spawnMultiplier = .99f; 
 
 
 	EnemyGenerator(Spaceship playerSpaceship){
@@ -25,9 +25,10 @@ public class EnemyGenerator {
 
 	void generate(){
 
-		int lives = rand.nextInt(5) + 1;
-		float size = (rand.nextFloat() * 1 + .5f);
-		int speed = (rand.nextInt(100) + 50);
+		float size = (rand.nextFloat()  + .5f);
+		int speed = rand.nextInt(200) + 50;
+		int lives = 1;
+		int angle = rand.nextInt(360);
 
 		int numOfEnemies = enemies.size();
 		BasicEnemy enemy = null;
@@ -35,39 +36,48 @@ public class EnemyGenerator {
 			BasicEnemy cycleEnemy = enemies.get(i);
 			if(cycleEnemy.isDead()){
 				enemy = cycleEnemy; 
-				enemy.recycle(speed, size, lives);
+				enemy.recycle(size,  lives, speed, angle);
 				break; 
 			}
 
 		}
-		if(enemy == null)
-			enemy = new BasicEnemy(speed, size, lives);
-		enemies.add(enemy);
+		if(enemy == null){
+			enemy = new BasicEnemy( size, lives, speed, angle);
+			enemies.add(enemy);
+		}
 
 		int x =0;
 		int y =0 ; 
-		float deltaX = rand.nextFloat() *2 -1;
+		float deltaX = rand.nextFloat();
 		float deltaY = (float) Math.sqrt(1 - deltaX * deltaX); 
-		if(rand.nextBoolean())
-			deltaY = -deltaY; 
 
 		int generateRegion = rand.nextInt(4);
 		switch(generateRegion){
 		case 0:
 			x = rand.nextInt(Settings.WORLD_WIDTH);
 			y = enemy.getTopBoundary();
+			if(x > Settings.WORLD_WIDTH/2)
+				deltaX = - deltaX; 
 			break; 
 		case 1:
 			x = enemy.getRightBoundary();
 			y = rand.nextInt(Settings.WORLD_HEIGHT);
+			if(y > Settings.WORLD_HEIGHT/2)
+				deltaY = -deltaY;
 			break;
 		case 2:
 			x = rand.nextInt(Settings.WORLD_WIDTH);
 			y = enemy.getBottomBoundary();
+			if(x > Settings.WORLD_WIDTH/2)
+				deltaX = - deltaX; 
+			deltaY = - deltaY;
 			break;
 		case 3:
 			x = enemy.getLeftBoundary();
 			y = rand.nextInt(Settings.WORLD_HEIGHT);
+			if(y > Settings.WORLD_HEIGHT/2)
+				deltaY = -deltaY;
+			deltaX = -deltaX;
 			break; 
 		}
 		enemy.setDeltas(deltaX, deltaY);
@@ -109,7 +119,7 @@ public class EnemyGenerator {
 		}
 		ticsToSpawn = 600f;
 	}
-	
+
 	boolean isDead(){
 		int numOfEnemies = enemies.size();
 		for(int i = 0; i < numOfEnemies; i++){
@@ -119,10 +129,11 @@ public class EnemyGenerator {
 		}
 		return true; 
 	}
-	
+
 	void reset(){
-		ticsToSpawn = 2.0f;
-		ticCounter = 2.0f;
-		spawnMultiplier = .999f; 
+		enemies.clear();
+		ticsToSpawn = 1.2f;
+		ticCounter = .5f;
+		spawnMultiplier = .99f; 
 	}
 }

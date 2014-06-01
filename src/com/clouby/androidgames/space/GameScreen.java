@@ -24,12 +24,12 @@ public class GameScreen extends Screen{
 
 	@Override
 	public void pause() {
-
+		Settings.save(game.getFileIO());
 	}
 
 	@Override
 	public void resume() {
-
+		Settings.load(game.getFileIO());
 	}
 
 	@Override

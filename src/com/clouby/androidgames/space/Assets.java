@@ -14,6 +14,10 @@ public class Assets {
 	public static Pixmap backButton; 
 	public static Pixmap title;
 	public static Pixmap basicEnemy;
+	public static Pixmap phoneOrientation;
+	public static Pixmap highscoreTitle;
+	public static Pixmap onlineTitle;
+	public static Pixmap localTitle;
 	public static Typeface font; 
 	public static Sound basicMissleFire; 
 	public static Sound forming; 

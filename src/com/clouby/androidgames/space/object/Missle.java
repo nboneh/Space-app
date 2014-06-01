@@ -12,8 +12,8 @@ public class Missle extends WorldObject {
 		super(x, y, pixmap, 300,1, 1, 3, 1); 
 		float deltaX = (float) Math.sin(Math.toRadians(angle));
 		float deltaY = - (float) Math.cos(Math.toRadians(angle));
-		speed = 300; 
-		totalDistance = 250; 
+		speed = 400; 
+		totalDistance = 350; 
 		this.angle = angle;
 		setDeltas(deltaX, deltaY);
 		volume = 0; 
@@ -25,7 +25,7 @@ public class Missle extends WorldObject {
 		setState(State.NORMAL);
 		this.x = x;
 		this.y = y; 
-		speed = 300; 
+		speed = 400; 
 		distanceTraveled = 0;
 		this.angle = angle;
 		setDeltas(deltaX, deltaY);

@@ -32,10 +32,15 @@ public class LoadingScreen extends Screen{
 			Assets.backButton = g.newPixmap("backbutton.png", PixmapFormat.ARGB4444);
 			Assets.title = g.newPixmap("title.png", PixmapFormat.ARGB4444);
 			Assets.basicEnemy = g.newPixmap("basicenemy.png", PixmapFormat.ARGB4444);
+			Assets.phoneOrientation = g.newPixmap("phoneorientation.png", PixmapFormat.ARGB4444);
+			Assets.highscoreTitle = g.newPixmap("highscoretitle.png", PixmapFormat.ARGB4444);
+			Assets.onlineTitle = g.newPixmap("onlinetitle.png", PixmapFormat.ARGB4444);
+			Assets.localTitle = g.newPixmap("localtitle.png", PixmapFormat.ARGB4444);
 			Assets.font = g.newTypeFace("font.ttf");
 			Assets.basicMissleFire = a.newSound("basicmisslefire.ogg");
 			Assets.forming = a.newSound("forming.ogg");
 			Assets.deForming = a.newSound("deforming.ogg");
+			Settings.load(game.getFileIO());
 
 			try {
 				Thread.sleep(2000L);
