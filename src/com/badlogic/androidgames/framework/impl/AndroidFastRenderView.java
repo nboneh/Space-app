@@ -3,6 +3,7 @@ package com.badlogic.androidgames.framework.impl;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Looper;
 import android.text.InputType;
 import android.util.Log;
 import android.view.SurfaceHolder;

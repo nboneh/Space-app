@@ -36,6 +36,9 @@ public class LoadingScreen extends Screen{
 			Assets.highscoreTitle = g.newPixmap("highscoretitle.png", PixmapFormat.ARGB4444);
 			Assets.onlineTitle = g.newPixmap("onlinetitle.png", PixmapFormat.ARGB4444);
 			Assets.localTitle = g.newPixmap("localtitle.png", PixmapFormat.ARGB4444);
+			Assets.gameOver = g.newPixmap("gameover.png",PixmapFormat.ARGB4444);
+			Assets.newGame = g.newPixmap("newgame.png",PixmapFormat.ARGB4444);
+			Assets.mainMenu = g.newPixmap("mainmenu.png",PixmapFormat.ARGB4444);
 			Assets.font = g.newTypeFace("font.ttf");
 			Assets.basicMissleFire = a.newSound("basicmisslefire.ogg");
 			Assets.forming = a.newSound("forming.ogg");

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -16,6 +17,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.widget.EditText;
 
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Pixmap;
@@ -26,14 +28,19 @@ public class AndroidGraphics implements Graphics {
 	Bitmap frameBuffer;
 	Canvas canvas;
 	Paint paint;
+	EditText editText; 
 	Rect srcRect = new Rect();
 	Rect dstRect = new Rect();
 
-	public AndroidGraphics(AssetManager assets, Bitmap frameBuffer) {
+	public AndroidGraphics(AssetManager assets, Bitmap frameBuffer,Context context) {
 		this.assets = assets;
 		this.frameBuffer = frameBuffer;
 		this.canvas = new Canvas(frameBuffer);
 		this.paint = new Paint();
+		editText = new EditText(context);
+		editText.setText("My Text");
+		editText.setWidth(180);         
+		editText.setBackgroundColor(Color.WHITE);
 	}
 
 	@Override
@@ -82,7 +89,7 @@ public class AndroidGraphics implements Graphics {
 	@Override
 	public void clear(int color) {
 		canvas.drawRGB((color & 0xff0000) >> 16, (color & 0xff00) >> 8,
-		(color & 0xff));
+				(color & 0xff));
 	}
 
 	@Override
@@ -142,17 +149,17 @@ public class AndroidGraphics implements Graphics {
 			, Typeface font ) {
 		paint.setColor(Color.WHITE);
 		paint.setTextSize(size);
-		  paint.setStyle(Style.STROKE);
-		  paint.setStrokeWidth(1.25f);
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(1.25f);
 		canvas.drawText(text, x, y, paint);
 
-		
+
 		paint.setColor(color);
-		  paint.setAntiAlias(true);
+		paint.setAntiAlias(true);
 		paint.setTextSize(size);
-		  paint.setStyle(Style.FILL);
+		paint.setStyle(Style.FILL);
 		canvas.drawText(text, x, y, paint);
-		
+
 
 	}
 
@@ -164,8 +171,8 @@ public class AndroidGraphics implements Graphics {
 	@Override
 	public void drawPixmap(Pixmap pixmap, int x, int y, int srcX, int srcY,
 			int srcWidth, int srcHeight, int angle, float size) {
-		
-		
+
+
 		String key = srcX + "" + srcY +"" + srcWidth +"" + srcHeight+ "" + angle + "" + size; 
 		Bitmap bitmap = pixmap.getPreRendered(key);
 		if(bitmap == null){
@@ -175,10 +182,18 @@ public class AndroidGraphics implements Graphics {
 			bitmap = Bitmap.createBitmap(((AndroidPixmap) pixmap).bitmap, srcX, srcY, srcWidth, srcHeight,matrix, false);
 			pixmap.insertPreRendered(key, bitmap);
 		}
-		
-		canvas.drawBitmap(bitmap, x, y, paint);
-		
 
+		canvas.drawBitmap(bitmap, x, y, paint);
+
+
+
+	}
+
+	@Override
+	public void drawEditText(int x, int y) {
+		editText.setDrawingCacheEnabled(true);
+		Bitmap b = editText.getDrawingCache();
+		//canvas.drawBitmap(bitmap, l, t, r, b, null);
 
 	}
 

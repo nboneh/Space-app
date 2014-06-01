@@ -24,6 +24,8 @@ public interface Graphics {
     
     public Typeface newTypeFace (String fileName);
     
+    public void drawEditText(int x,int y);
+    
     public void drawFont(int x, int y, int size, String message, int color ,Typeface font);
 
     public int getWidth();

@@ -15,9 +15,10 @@ import com.clouby.androidgames.space.object.WorldObject.State;
 
 public class World {
 
-	enum WorldState{
+	public static enum WorldState{
 		INTRO, 
 		MAINMENU,
+		GAMEOVER,
 		HIGHSCORE,
 		GAME;
 	}
@@ -43,6 +44,11 @@ public class World {
 	private EnemyGenerator enemyGenerator; 
 	private float transitionCounter;
 	private WorldState worldState; 
+	
+	//GameOver items
+	private WorldObject gameOverTitle;
+	private WorldObject newGameButton;
+	private WorldObject mainMenuButton; 
 
 	final static float TIC_TIME = 0.07f; 
 	final static float TIME_DELAY_TRANSITION = 1f; 
@@ -82,7 +88,13 @@ public class World {
 		backButton = new Button(0,0 , Assets.backButton);
 		backButton.setY(Settings.WORLD_HEIGHT - backButton.getHeight());
 
-
+		gameOverTitle = new Button(0, 20, Assets.gameOver);
+		gameOverTitle.setSize(1.5f);
+		gameOverTitle.centerInX();
+		newGameButton = new Button(0, 170, Assets.newGame);
+		newGameButton.centerInX();
+		mainMenuButton = new Button(0, 210, Assets.mainMenu );
+		mainMenuButton.centerInX();
 
 		enemyGenerator = new EnemyGenerator(playerSpaceship);
 
@@ -106,6 +118,14 @@ public class World {
 			setScoreMultiplier(1);
 			enemyGenerator.reset();
 			break; 
+		case GAMEOVER:
+			gameOverTitle.setState(State.INTRO);
+			newGameButton.setState(State.INTRO);
+			mainMenuButton.setState(State.INTRO);
+			highscoreButton.setState(State.INTRO);
+			playerSpaceship.setState(State.INTRO);
+			
+			break;
 		case HIGHSCORE:
 			highScoreTitle.setState(State.INTRO);
 			onlineTitle.setState(State.INTRO);
@@ -132,6 +152,9 @@ public class World {
 			case GAME:
 				updateGame(deltaTime);
 				break;
+			case GAMEOVER:
+				updateGameOver(deltaTime);
+				break; 
 			case HIGHSCORE:
 				updateHighscore(deltaTime);
 				break;
@@ -151,6 +174,9 @@ public class World {
 		switch(worldState){
 		case GAME:
 			presentGame(g);
+			break; 
+		case GAMEOVER:
+			presentGameOver(g);
 			break; 
 		case HIGHSCORE:
 			presentHighscore( g);
@@ -228,9 +254,11 @@ public class World {
 		localTitle.present(g);
 		backButton.present(g);
 		int len = Settings.size;
-		for(int i = 0; i < len; i++){
-			g.drawFont(30, i *30 + 90, 8, Settings.names[i] + "", Color.RED, Assets.font);
-			g.drawFont(60, i *30 + 90, 8, Settings.highscores[i] + "", Color.RED, Assets.font);
+		if(highScoreTitle.getState() == State.NORMAL){
+			for(int i = 0; i < len; i++){
+				g.drawFont(30, i *35 + 125, 18, (i+1)  + ". " + Settings.localHighscores[i].getName(), Color.RED, Assets.font);
+				g.drawFont(140, i *35 + 125, 18,  Settings.localHighscores[i].getScore() + "", Color.RED, Assets.font);
+		}
 		}
 	}
 
@@ -240,7 +268,7 @@ public class World {
 			setScoreMultiplier(0);
 			enemyGenerator.destroy();
 			if(enemyGenerator.isDead()){
-				setWorldState(WorldState.INTRO);
+				setWorldState(WorldState.GAMEOVER);
 			}
 		}
 
@@ -249,6 +277,49 @@ public class World {
 	private void presentGame(Graphics g){
 		enemyGenerator.present(g);
 		g.drawFont(10, 20, 20, "Score: " + score, Color.RED, Assets.font);
+	}
+	
+	private void updateGameOver(float deltaTime){
+		gameOverTitle.update(deltaTime);
+		newGameButton.update(deltaTime);
+		mainMenuButton.update(deltaTime);
+		highscoreButton.update(deltaTime);
+		
+
+		if(nextState == null  && highscoreButton.isDead()){
+			newGameButton.setState(State.DYING);
+			gameOverTitle.setState(State.DYING);
+			mainMenuButton.setState(State.DYING);
+			nextState = WorldState.HIGHSCORE;
+		}
+		
+		else if(nextState == null  && mainMenuButton.isDead()){
+			newGameButton.setState(State.DYING);
+			gameOverTitle.setState(State.DYING);
+			highscoreButton.setState(State.DYING);
+			nextState = WorldState.MAINMENU;
+		}
+		
+		else if(nextState == null  && newGameButton.isDead()){
+			highscoreButton.setState(State.DYING);
+			gameOverTitle.setState(State.DYING);
+			mainMenuButton.setState(State.DYING);
+			nextState = WorldState.GAME;
+		}
+
+		if(nextState != null  && gameOverTitle.isDead()){
+			setWorldState(nextState);
+			nextState = null; 
+		}
+	}
+	
+	private void presentGameOver(Graphics g){
+		highscoreButton.present(g);
+		gameOverTitle.present(g);
+		mainMenuButton.present(g);
+		newGameButton.present(g);
+		if(gameOverTitle.getState() == State.NORMAL)
+			g.drawFont(160, 140, 40, "Score: " + score, Color.RED, Assets.font);
 	}
 
 	private void updateInput(float deltaTime, Input input){
@@ -271,6 +342,20 @@ public class World {
 						break;
 					case INTRO:
 						return; 
+					case GAMEOVER:
+						 if(highscoreButton.clicked(event.x, event.y)){
+							highscoreButton.setState(State.DYING);
+							return; 
+						}
+						 else if(mainMenuButton.clicked(event.x, event.y)){
+							 	mainMenuButton.setState(State.DYING);
+								return; 
+							}
+						 else if(newGameButton.clicked(event.x, event.y)){
+							 newGameButton.setState(State.DYING);
+								return; 
+							}
+						 break;
 					case MAINMENU:
 						if(playButton.clicked(event.x, event.y)){
 							playButton.setState(State.DYING);
@@ -313,12 +398,15 @@ public class World {
 
 
 
-
 	void incScore(int score) {
 		this.score += score * scoreMultiplier; 
 	}
 	void setScoreMultiplier(int scoreMultiplier){
 		this.scoreMultiplier = scoreMultiplier;
+	}
+	
+	public WorldState getWorldState(){
+		return worldState;
 	}
 
 

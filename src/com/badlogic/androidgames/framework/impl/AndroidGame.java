@@ -8,9 +8,12 @@ import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.PopupWindow;
 
 import com.badlogic.androidgames.framework.Audio;
 import com.badlogic.androidgames.framework.FileIO;
@@ -18,6 +21,7 @@ import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Screen;
+import com.coluby.androidgames.codebreaker.R;
 
 public abstract class AndroidGame extends Activity implements Game {
 	AndroidFastRenderView renderView;
@@ -51,7 +55,7 @@ public abstract class AndroidGame extends Activity implements Game {
 				/ getWindowManager().getDefaultDisplay().getHeight();
 
 		renderView = new AndroidFastRenderView(this, frameBuffer);
-		graphics = new AndroidGraphics(getAssets(), frameBuffer);
+		graphics = new AndroidGraphics(getAssets(), frameBuffer, this);
 		fileIO = new AndroidFileIO(getAssets());
 		audio = new AndroidAudio(this);
 		input = new AndroidInput(this, renderView, scaleX, scaleY);
@@ -61,7 +65,7 @@ public abstract class AndroidGame extends Activity implements Game {
 		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "GLGame");
 	}
-
+	
 	@Override
 	public void onResume() {
 		super.onResume();

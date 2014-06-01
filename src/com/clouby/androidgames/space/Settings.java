@@ -12,43 +12,40 @@ import android.util.Log;
 import com.badlogic.androidgames.framework.FileIO;
 
 public class Settings {
+	private final static String FILE_NAME = ".retrospace";
 	public static final int WORLD_WIDTH = 480;
 	public static final int WORLD_HEIGHT = 320;
-	
+
 	public static float defaultX = 0;
 	public static float defaultY = 0; 
 
-	public static int[] highscores;
-	public static String[] names;
+	public static HighScoreContainer[] localHighscores;
 	public final static int size = 5; 
-	private final static String fileName = ".retrospace";
 
 	static 
 	{
-		highscores = new int[size];
-		Arrays.fill(highscores, 0);
-		names = new String[size];
-		Arrays.fill(names, "Clouby");
+		localHighscores = new HighScoreContainer[5]; 
+		Arrays.fill(localHighscores, new HighScoreContainer());
 	}
 
 	public static void load(FileIO files){
 		BufferedReader in = null;
 		try{
 			in = new BufferedReader
-					(new InputStreamReader(files.readFile(fileName)));
+					(new InputStreamReader(files.readFile(FILE_NAME)));
 			defaultX = Float.parseFloat(in.readLine());
 			defaultY = Float.parseFloat(in.readLine());
 			for(int i = 0; i < size; i++){
-				highscores[i] = Integer.parseInt(in.readLine());
-			}
-			for(int i = 0; i < size; i++){
-				names[i] = in.readLine();
+				HighScoreContainer score = localHighscores[i]; 
+				score.setName(in.readLine());
+				score.setScore(Integer.parseInt(in.readLine()));
+				score.setTimestamp(Long.parseLong(in.readLine()));
+				score.setSent(Boolean.parseBoolean(in.readLine()));
 			}
 		} catch (IOException e){
 			//We have default highscores
 		} catch (NumberFormatException e){
-			//DEFAULTS!!!
-			Log.d("Load", "Numberformat");
+			//DEFAULTS!!
 		} finally{
 			try{
 				if(in != null)
@@ -62,17 +59,20 @@ public class Settings {
 		BufferedWriter out = null;
 		try{
 			out = new BufferedWriter(new OutputStreamWriter(
-					files.writeFile(fileName)));
+					files.writeFile(FILE_NAME)));
 			out.write(Float.toString(defaultX));
 			out.write(System.getProperty("line.separator"));
 			out.write(Float.toString(defaultY));
 			out.write(System.getProperty("line.separator"));
 			for(int i = 0; i < size; i++){
-				out.write(Integer.toString(highscores[i]));
+				HighScoreContainer score = localHighscores[i]; 
+				out.write(score.getName());
 				out.write(System.getProperty("line.separator"));
-			} 
-			for(int i = 0; i < size; i++){
-				out.write(names[i]);
+				out.write(Integer.toString(score.getScore()));
+				out.write(System.getProperty("line.separator"));
+				out.write(Long.toString(score.getTimestamp()));
+				out.write(System.getProperty("line.separator"));
+				out.write(Boolean.toString(score.isSent()));
 				out.write(System.getProperty("line.separator"));
 			}
 
@@ -89,7 +89,7 @@ public class Settings {
 
 	public static boolean madeHighScore(int score){
 		for(int i = 0; i < size; i++){
-			if(highscores[i] < score){
+			if(localHighscores[i].getScore() < score){
 				return true;
 			}
 		}
@@ -97,17 +97,16 @@ public class Settings {
 	}
 
 	public static void addScore(int score, String name){
-		if(!name.equals("")){
-			for(int i = 0; i < size; i++){
-				if(highscores[i] < score){
-					for(int j = size-1; j > i; j--){
-						highscores[j] = highscores[j-1];
-						names[j] = names[j-1];
-					}
-					highscores[i] = score; 
-					names[i] = name; 
-					break; 
+		for(int i = 0; i < size; i++){
+			if(localHighscores[i].getScore() < score){
+				for(int j = size-1; j > i; j--){
+					localHighscores[j] = localHighscores[j-1];
 				}
+				localHighscores[i].setScore(score);
+				localHighscores[i].setTimestamp(System.currentTimeMillis());
+				localHighscores[i].setSent(false);
+				localHighscores[i].setName(name);
+				break; 
 			}
 		}
 
