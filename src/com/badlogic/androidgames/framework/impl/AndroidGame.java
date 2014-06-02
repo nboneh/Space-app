@@ -109,9 +109,9 @@ public abstract class AndroidGame extends Activity implements Game {
 					et.setVisibility(View.VISIBLE);
 					return;
 				case CLOSE_EDIT_TEXT:
+					et.setVisibility(View.GONE);
 					Settings.name = et.getText() + "";
 					Settings.addScore(msg.arg2, Settings.name);
-					et.setVisibility(View.GONE);
 					return;
 				}
 

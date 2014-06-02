@@ -27,7 +27,9 @@ public class Settings {
 	static 
 	{
 		localHighscores = new HighScoreContainer[5]; 
-		Arrays.fill(localHighscores, new HighScoreContainer());
+		for(int i = 0; i < size; i++){
+			localHighscores[i] = new HighScoreContainer();
+		}
 	}
 
 	public static void load(FileIO files){
@@ -107,10 +109,12 @@ public class Settings {
 				for(int j = size-1; j > i; j--){
 					localHighscores[j] = localHighscores[j-1];
 				}
-				localHighscores[i].setScore(score);
-				localHighscores[i].setTimestamp(System.currentTimeMillis());
-				localHighscores[i].setSent(false);
-				localHighscores[i].setName(name);
+				HighScoreContainer scoree = new HighScoreContainer(); 
+				scoree.setScore(score);
+				scoree.setTimestamp(System.currentTimeMillis());
+				scoree.setSent(false);
+				scoree.setName(name);
+				localHighscores[i] = scoree; 
 				break; 
 			}
 		}
