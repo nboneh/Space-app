@@ -8,12 +8,15 @@ import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.text.Layout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 
 import com.badlogic.androidgames.framework.Audio;
 import com.badlogic.androidgames.framework.FileIO;
@@ -55,12 +58,18 @@ public abstract class AndroidGame extends Activity implements Game {
 				/ getWindowManager().getDefaultDisplay().getHeight();
 
 		renderView = new AndroidFastRenderView(this, frameBuffer);
-		graphics = new AndroidGraphics(getAssets(), frameBuffer, this);
+		graphics = new AndroidGraphics(getAssets(), frameBuffer);
 		fileIO = new AndroidFileIO(getAssets());
 		audio = new AndroidAudio(this);
 		input = new AndroidInput(this, renderView, scaleX, scaleY);
 		screen = getStartScreen();
-		setContentView(renderView);
+		
+		 RelativeLayout layout = new RelativeLayout(this);
+		 layout.addView(renderView);
+		 layout.addView(findViewById(R.layout.submitscore_popup));
+		 
+		 
+		setContentView(layout);
 
 		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "GLGame");

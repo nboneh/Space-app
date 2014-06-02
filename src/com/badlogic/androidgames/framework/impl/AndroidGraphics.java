@@ -2,9 +2,7 @@ package com.badlogic.androidgames.framework.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.NoSuchElementException;
 
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -17,7 +15,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.util.Log;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.EditText;
 
@@ -31,18 +29,15 @@ public class AndroidGraphics implements Graphics {
 	Canvas canvas;
 	Paint paint;
 	EditText editText; 
+	View popupView; 
 	Rect srcRect = new Rect();
 	Rect dstRect = new Rect();
 
-	public AndroidGraphics(AssetManager assets, Bitmap frameBuffer,Context context) {
+	public AndroidGraphics(AssetManager assets, Bitmap frameBuffer) {
 		this.assets = assets;
 		this.frameBuffer = frameBuffer;
 		this.canvas = new Canvas(frameBuffer);
 		this.paint = new Paint();
-		editText = new EditText(context);
-		editText.setText("My Text");
-		editText.setWidth(180);         
-		editText.setBackgroundColor(Color.WHITE);
 	}
 
 	@Override
