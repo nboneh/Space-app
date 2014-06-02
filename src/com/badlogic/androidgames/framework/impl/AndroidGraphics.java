@@ -17,6 +17,8 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.util.Log;
+import android.view.View.MeasureSpec;
 import android.widget.EditText;
 
 import com.badlogic.androidgames.framework.Graphics;
@@ -192,8 +194,14 @@ public class AndroidGraphics implements Graphics {
 	@Override
 	public void drawEditText(int x, int y) {
 		editText.setDrawingCacheEnabled(true);
+		editText.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 
+	            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+		editText.layout(0, 0, editText.getMeasuredWidth(),editText.getMeasuredHeight()); 
+		editText.buildDrawingCache(true);
 		Bitmap b = editText.getDrawingCache();
-		//canvas.drawBitmap(bitmap, l, t, r, b, null);
+		canvas.drawBitmap(b, x, y, null);
+		
+		editText.setDrawingCacheEnabled(false); 
 
 	}
 

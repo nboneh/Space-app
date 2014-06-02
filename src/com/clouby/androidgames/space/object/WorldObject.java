@@ -222,7 +222,8 @@ abstract class WorldObject {
 	}
 	
 	boolean clicked(int finx, int finy){
-		if (state != State.DYING
+		if (state != State.DYING 
+				&& state != State.INTRO 
 				&& (x +(width) > finx) 
 				&& (x <  finx)
 				&& (y +(height) > finy )  

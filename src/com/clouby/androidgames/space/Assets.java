@@ -21,6 +21,7 @@ public class Assets {
 	public static Pixmap gameOver; 
 	public static Pixmap newGame;
 	public static Pixmap mainMenu;
+	public static Pixmap submitButton; 
 	public static Typeface font; 
 	public static Sound basicMissleFire; 
 	public static Sound forming; 

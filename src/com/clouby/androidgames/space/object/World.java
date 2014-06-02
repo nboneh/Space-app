@@ -20,6 +20,7 @@ public class World {
 		MAINMENU,
 		GAMEOVER,
 		HIGHSCORE,
+		SUBMITSCORE,
 		GAME;
 	}
 
@@ -39,12 +40,14 @@ public class World {
 	private WorldObject localTitle;
 	private WorldObject backButton; 
 
-
 	//Enemy Generator
 	private EnemyGenerator enemyGenerator; 
 	private float transitionCounter;
 	private WorldState worldState; 
-	
+
+	//Submit Score
+	private WorldObject submitButton;
+
 	//GameOver items
 	private WorldObject gameOverTitle;
 	private WorldObject newGameButton;
@@ -96,6 +99,9 @@ public class World {
 		mainMenuButton = new Button(0, 210, Assets.mainMenu );
 		mainMenuButton.centerInX();
 
+		submitButton = new Button(0, 250, Assets.submitButton);
+		submitButton.centerInX();
+
 		enemyGenerator = new EnemyGenerator(playerSpaceship);
 
 		setWorldState(WorldState.INTRO);
@@ -118,13 +124,18 @@ public class World {
 			setScoreMultiplier(1);
 			enemyGenerator.reset();
 			break; 
+		case SUBMITSCORE:
+			submitButton.setState(State.INTRO);
+			break;
 		case GAMEOVER:
 			gameOverTitle.setState(State.INTRO);
 			newGameButton.setState(State.INTRO);
 			mainMenuButton.setState(State.INTRO);
 			highscoreButton.setState(State.INTRO);
 			playerSpaceship.setState(State.INTRO);
-			
+			playerSpaceship.centerInX();
+			playerSpaceship.centerInY();
+			playerSpaceship.setAngle(0);
 			break;
 		case HIGHSCORE:
 			highScoreTitle.setState(State.INTRO);
@@ -152,6 +163,9 @@ public class World {
 			case GAME:
 				updateGame(deltaTime);
 				break;
+			case SUBMITSCORE:
+				updateSubmitScore(deltaTime);
+				break;
 			case GAMEOVER:
 				updateGameOver(deltaTime);
 				break; 
@@ -175,6 +189,9 @@ public class World {
 		case GAME:
 			presentGame(g);
 			break; 
+		case SUBMITSCORE:
+			presentSubmitScore(g); 
+			break;
 		case GAMEOVER:
 			presentGameOver(g);
 			break; 
@@ -223,6 +240,7 @@ public class World {
 	}
 
 	private void presentMainMenu(Graphics g){
+		g.drawEditText(80, 80);
 		title.present(g);
 		playButton.present(g);
 		highscoreButton.present(g);
@@ -258,7 +276,7 @@ public class World {
 			for(int i = 0; i < len; i++){
 				g.drawFont(30, i *35 + 125, 18, (i+1)  + ". " + Settings.localHighscores[i].getName(), Color.RED, Assets.font);
 				g.drawFont(140, i *35 + 125, 18,  Settings.localHighscores[i].getScore() + "", Color.RED, Assets.font);
-		}
+			}
 		}
 	}
 
@@ -268,7 +286,10 @@ public class World {
 			setScoreMultiplier(0);
 			enemyGenerator.destroy();
 			if(enemyGenerator.isDead()){
-				setWorldState(WorldState.GAMEOVER);
+				if(Settings.madeHighScore(score))
+					setWorldState(WorldState.SUBMITSCORE);
+				else
+					setWorldState(WorldState.GAMEOVER);
 			}
 		}
 
@@ -278,13 +299,25 @@ public class World {
 		enemyGenerator.present(g);
 		g.drawFont(10, 20, 20, "Score: " + score, Color.RED, Assets.font);
 	}
-	
+
+	private void updateSubmitScore(float deltaTime){
+		submitButton.update(deltaTime);
+		if(submitButton.isDead()){
+			setWorldState(WorldState.GAMEOVER);
+		}
+	}
+
+	private void presentSubmitScore(Graphics g){
+		submitButton.present(g);
+		g.drawFont(10, 20, 20, "Score: " + score, Color.RED, Assets.font);
+	}
+
 	private void updateGameOver(float deltaTime){
 		gameOverTitle.update(deltaTime);
 		newGameButton.update(deltaTime);
 		mainMenuButton.update(deltaTime);
 		highscoreButton.update(deltaTime);
-		
+
 
 		if(nextState == null  && highscoreButton.isDead()){
 			newGameButton.setState(State.DYING);
@@ -292,14 +325,14 @@ public class World {
 			mainMenuButton.setState(State.DYING);
 			nextState = WorldState.HIGHSCORE;
 		}
-		
+
 		else if(nextState == null  && mainMenuButton.isDead()){
 			newGameButton.setState(State.DYING);
 			gameOverTitle.setState(State.DYING);
 			highscoreButton.setState(State.DYING);
 			nextState = WorldState.MAINMENU;
 		}
-		
+
 		else if(nextState == null  && newGameButton.isDead()){
 			highscoreButton.setState(State.DYING);
 			gameOverTitle.setState(State.DYING);
@@ -312,7 +345,7 @@ public class World {
 			nextState = null; 
 		}
 	}
-	
+
 	private void presentGameOver(Graphics g){
 		highscoreButton.present(g);
 		gameOverTitle.present(g);
@@ -323,63 +356,67 @@ public class World {
 	}
 
 	private void updateInput(float deltaTime, Input input){
-		if(playerSpaceship.state != State.DYING){
-
-			List<TouchEvent> touchEvents = input.getTouchEvents();
-			int size = touchEvents.size();
-			for(int i = 0; i < size; i++){
-				TouchEvent event = touchEvents.get(i);
-				switch(event.type){
-				case TouchEvent.TOUCH_DOWN:
-					switch(worldState){
-					case GAME:
-						break;
-					case HIGHSCORE:
-						if(backButton.clicked(event.x, event.y)){
-							backButton.setState(State.DYING);
-							return;
-						}
-						break;
-					case INTRO:
-						return; 
-					case GAMEOVER:
-						 if(highscoreButton.clicked(event.x, event.y)){
-							highscoreButton.setState(State.DYING);
-							return; 
-						}
-						 else if(mainMenuButton.clicked(event.x, event.y)){
-							 	mainMenuButton.setState(State.DYING);
-								return; 
-							}
-						 else if(newGameButton.clicked(event.x, event.y)){
-							 newGameButton.setState(State.DYING);
-								return; 
-							}
-						 break;
-					case MAINMENU:
-						if(playButton.clicked(event.x, event.y)){
-							playButton.setState(State.DYING);
-							return;
-						}
-						else if(highscoreButton.clicked(event.x, event.y)){
-							highscoreButton.setState(State.DYING);
-							return; 
-						}
-						else if(phoneOrientation.clicked(event.x, event.y)){
-							phoneOrientation.setState(State.INTRO);
-							Settings.defaultY = input.getAccelY();
-							Settings.defaultX = input.getAccelX();
-							return;
-						}
-						break;
-					default:
-						break;
+		List<TouchEvent> touchEvents = input.getTouchEvents();
+		int size = touchEvents.size();
+		for(int i = 0; i < size; i++){
+			TouchEvent event = touchEvents.get(i);
+			switch(event.type){
+			case TouchEvent.TOUCH_DOWN:
+				switch(worldState){
+				case GAME:
+					break;
+				case HIGHSCORE:
+					if(backButton.clicked(event.x, event.y)){
+						backButton.setState(State.DYING);
+						return;
 					}
-					playerSpaceship.setState(State.ATTACKING);
-				case TouchEvent.TOUCH_DRAGGED:
-					playerSpaceship.updateAngle(event.x, event.y);
+					break;
+				case INTRO:
+					return; 
+				case GAMEOVER:
+					if(highscoreButton.clicked(event.x, event.y)){
+						highscoreButton.setState(State.DYING);
+						return; 
+					}
+					else if(mainMenuButton.clicked(event.x, event.y)){
+						mainMenuButton.setState(State.DYING);
+						return; 
+					}
+					else if(newGameButton.clicked(event.x, event.y)){
+						newGameButton.setState(State.DYING);
+						return; 
+					}
+					break;
+				case MAINMENU:
+					if(playButton.clicked(event.x, event.y)){
+						playButton.setState(State.DYING);
+						return;
+					}
+					else if(highscoreButton.clicked(event.x, event.y)){
+						highscoreButton.setState(State.DYING);
+						return; 
+					}
+					else if(phoneOrientation.clicked(event.x, event.y)){
+						phoneOrientation.setState(State.INTRO);
+						Settings.defaultY = input.getAccelY();
+						Settings.defaultX = input.getAccelX();
+						return;
+					}
+					break;
+				case SUBMITSCORE:
+					if(submitButton.clicked(event.x ,event.y)){
+						submitButton.setState(State.DYING);
+						return;
+					}
 					break; 
+				default:
+					break;
 				}
+				if(playerSpaceship.state != State.DYING)
+					playerSpaceship.setState(State.ATTACKING);
+			case TouchEvent.TOUCH_DRAGGED:
+				playerSpaceship.updateAngle(event.x, event.y);
+				break; 
 			}
 		}
 		float deltaX =input.getAccelY() - Settings.defaultY;
@@ -404,7 +441,7 @@ public class World {
 	void setScoreMultiplier(int scoreMultiplier){
 		this.scoreMultiplier = scoreMultiplier;
 	}
-	
+
 	public WorldState getWorldState(){
 		return worldState;
 	}

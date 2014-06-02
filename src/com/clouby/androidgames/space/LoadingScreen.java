@@ -39,6 +39,7 @@ public class LoadingScreen extends Screen{
 			Assets.gameOver = g.newPixmap("gameover.png",PixmapFormat.ARGB4444);
 			Assets.newGame = g.newPixmap("newgame.png",PixmapFormat.ARGB4444);
 			Assets.mainMenu = g.newPixmap("mainmenu.png",PixmapFormat.ARGB4444);
+			Assets.submitButton = g.newPixmap("mainmenu.png", PixmapFormat.ARGB4444);
 			Assets.font = g.newTypeFace("font.ttf");
 			Assets.basicMissleFire = a.newSound("basicmisslefire.ogg");
 			Assets.forming = a.newSound("forming.ogg");
