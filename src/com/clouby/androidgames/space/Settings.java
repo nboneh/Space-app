@@ -15,6 +15,8 @@ public class Settings {
 	private final static String FILE_NAME = ".retrospace";
 	public static final int WORLD_WIDTH = 480;
 	public static final int WORLD_HEIGHT = 320;
+	
+	public static String name = "Clouby";
 
 	public static float defaultX = 0;
 	public static float defaultY = 0; 
@@ -33,6 +35,7 @@ public class Settings {
 		try{
 			in = new BufferedReader
 					(new InputStreamReader(files.readFile(FILE_NAME)));
+			name = in.readLine();
 			defaultX = Float.parseFloat(in.readLine());
 			defaultY = Float.parseFloat(in.readLine());
 			for(int i = 0; i < size; i++){
@@ -60,6 +63,8 @@ public class Settings {
 		try{
 			out = new BufferedWriter(new OutputStreamWriter(
 					files.writeFile(FILE_NAME)));
+			out.write(name);
+			out.write(System.getProperty("line.separator"));
 			out.write(Float.toString(defaultX));
 			out.write(System.getProperty("line.separator"));
 			out.write(Float.toString(defaultY));

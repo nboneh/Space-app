@@ -10,7 +10,7 @@ public class GameScreen extends Screen{
 
 	public GameScreen(Game game) {
 		super(game);
-		world = World.getInst();
+		world = World.getInst(game.getHandler());
 	}
 
 	@Override

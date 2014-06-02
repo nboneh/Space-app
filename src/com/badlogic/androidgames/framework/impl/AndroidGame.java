@@ -5,15 +5,24 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.text.InputFilter;
 import android.text.Layout;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -24,6 +33,7 @@ import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Screen;
+import com.clouby.androidgames.space.Settings;
 import com.coluby.androidgames.codebreaker.R;
 
 public abstract class AndroidGame extends Activity implements Game {
@@ -34,6 +44,11 @@ public abstract class AndroidGame extends Activity implements Game {
 	FileIO fileIO;
 	Screen screen;
 	WakeLock wakeLock;
+	EditText et; 
+	Handler h;
+	
+	public static final int OPEN_EDIT_TEXT  = 0;
+	public static final int CLOSE_EDIT_TEXT  = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,10 +81,42 @@ public abstract class AndroidGame extends Activity implements Game {
 		
 		 RelativeLayout layout = new RelativeLayout(this);
 		 layout.addView(renderView);
-		 layout.addView(findViewById(R.layout.submitscore_popup));
 		 
 		 
+		 et  = new EditText(this);
+		 et.setText(Settings.name);    
+		et.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+		et.setSingleLine(true);
+		InputFilter[] filterArray = new InputFilter[1];
+		filterArray[0] = new InputFilter.LengthFilter(9);
+		et.setFilters(filterArray);
+		et.setTextColor(Color.WHITE);
+		et.setTextSize(TypedValue.COMPLEX_UNIT_SP,50);
+		
+		RelativeLayout.LayoutParams testLP = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
+	    testLP.addRule(RelativeLayout.CENTER_IN_PARENT);
+	
+		layout.addView(et);
+		et.setLayoutParams(testLP);
 		setContentView(layout);
+		et.setVisibility(View.GONE);
+		
+		h = new Handler(this.getMainLooper()) {
+			public void handleMessage(Message msg) {
+				switch(msg.arg1){
+				case OPEN_EDIT_TEXT:
+					et.setVisibility(View.VISIBLE);
+					return;
+				case CLOSE_EDIT_TEXT:
+					Settings.name = et.getText() + "";
+					Settings.addScore(msg.arg2, Settings.name);
+					et.setVisibility(View.GONE);
+					return;
+				}
+
+			}
+		};
 
 		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "GLGame");
@@ -125,7 +172,12 @@ public abstract class AndroidGame extends Activity implements Game {
 		screen.update(0);
 		this.screen = screen;
 	}
-
+	
+	@Override 
+	public Handler getHandler(){
+		return h;
+	}
+	
 	public Screen getCurrentScreen() {
 		return screen;
 	}

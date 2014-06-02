@@ -2,12 +2,15 @@ package com.clouby.androidgames.space.object;
 
 import java.util.List;
 
-
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 
+import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Input.TouchEvent;
+import com.badlogic.androidgames.framework.impl.AndroidGame;
 import com.clouby.androidgames.space.Assets;
 import com.clouby.androidgames.space.Settings;
 import com.clouby.androidgames.space.object.WorldObject.State;
@@ -27,6 +30,7 @@ public class World {
 	private Spaceship playerSpaceship; 
 
 	private WorldState nextState = null; 
+	private Handler gameHandler;
 
 	//Main Menu Items
 	private WorldObject playButton;
@@ -60,14 +64,14 @@ public class World {
 
 	private static World inst;
 
-	public static World getInst(){
+	public static World getInst(Handler gameHandler){
 		if(inst == null)
-			inst = new World();
+			inst = new World(gameHandler);
 		return inst; 
 	}
 
 
-	private World(){
+	private World(Handler gameHandler){
 		playerSpaceship = new Spaceship(0,0,150);
 		playerSpaceship.centerInX();
 		playerSpaceship.centerInY();
@@ -103,6 +107,8 @@ public class World {
 		submitButton.centerInX();
 
 		enemyGenerator = new EnemyGenerator(playerSpaceship);
+		
+		this.gameHandler = gameHandler; 
 
 		setWorldState(WorldState.INTRO);
 	}
@@ -125,6 +131,9 @@ public class World {
 			enemyGenerator.reset();
 			break; 
 		case SUBMITSCORE:
+			Message msg = new Message();
+			msg.arg1 = AndroidGame.OPEN_EDIT_TEXT;
+			gameHandler.sendMessage(msg);
 			submitButton.setState(State.INTRO);
 			break;
 		case GAMEOVER:
@@ -240,7 +249,6 @@ public class World {
 	}
 
 	private void presentMainMenu(Graphics g){
-		g.drawEditText(80, 80);
 		title.present(g);
 		playButton.present(g);
 		highscoreButton.present(g);
@@ -303,6 +311,10 @@ public class World {
 	private void updateSubmitScore(float deltaTime){
 		submitButton.update(deltaTime);
 		if(submitButton.isDead()){
+			Message msg = new Message();
+			msg.arg1 = AndroidGame.CLOSE_EDIT_TEXT;
+			msg.arg2 = score; 
+			gameHandler.sendMessage(msg);
 			setWorldState(WorldState.GAMEOVER);
 		}
 	}

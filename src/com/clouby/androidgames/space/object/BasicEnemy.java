@@ -33,7 +33,7 @@ public class BasicEnemy extends WorldObject {
 		if(state == State.DYING){
 			speed /= 2;
 			if( lives <= 0)
-				World.getInst().incScore(1);
+				World.getInst(null).incScore(1);
 		}
 
 	}
