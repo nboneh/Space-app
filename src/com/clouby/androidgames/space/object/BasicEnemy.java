@@ -4,7 +4,6 @@ import com.clouby.androidgames.space.Assets;
 
 public class BasicEnemy extends WorldObject {
 
-	private int score; 
 
 	BasicEnemy( float size,  int lives, int speed,  int angle) {
 		super(0, 0, Assets.basicEnemy, speed, 1, 1, 5, size);

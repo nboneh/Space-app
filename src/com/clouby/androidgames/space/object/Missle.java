@@ -1,7 +1,6 @@
 package com.clouby.androidgames.space.object;
 
 import com.badlogic.androidgames.framework.Pixmap;
-import com.clouby.androidgames.space.Assets;
 
 public class Missle extends WorldObject {
 

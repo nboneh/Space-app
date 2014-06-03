@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 
-import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Input.TouchEvent;
@@ -103,7 +102,7 @@ public class World {
 		mainMenuButton = new Button(0, 210, Assets.mainMenu );
 		mainMenuButton.centerInX();
 
-		submitButton = new Button(0, 250, Assets.submitButton);
+		submitButton = new Button(0, 230, Assets.submitButton);
 		submitButton.centerInX();
 
 		enemyGenerator = new EnemyGenerator(playerSpaceship);
@@ -320,6 +319,8 @@ public class World {
 	}
 
 	private void presentSubmitScore(Graphics g){
+		g.drawFont(130, 50, 30, "Congratulations!", Color.RED, Assets.font);
+		g.drawFont(100, 90, 25, "You made the highscores!", Color.RED, Assets.font);
 		submitButton.present(g);
 		g.drawFont(10, 20, 20, "Score: " + score, Color.RED, Assets.font);
 	}

@@ -44,7 +44,6 @@ public class LoadingScreen extends Screen{
 			Assets.basicMissleFire = a.newSound("basicmisslefire.ogg");
 			Assets.forming = a.newSound("forming.ogg");
 			Assets.deForming = a.newSound("deforming.ogg");
-			Settings.load(game.getFileIO());
 
 			try {
 				Thread.sleep(2000L);

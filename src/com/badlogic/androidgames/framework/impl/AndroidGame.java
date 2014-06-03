@@ -79,18 +79,19 @@ public abstract class AndroidGame extends Activity implements Game {
 		input = new AndroidInput(this, renderView, scaleX, scaleY);
 		screen = getStartScreen();
 		
+		Settings.load(getFileIO());
+		
 		 RelativeLayout layout = new RelativeLayout(this);
 		 layout.addView(renderView);
-		 
 		 
 		 et  = new EditText(this);
 		 et.setText(Settings.name);    
 		et.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 		et.setSingleLine(true);
 		InputFilter[] filterArray = new InputFilter[1];
-		filterArray[0] = new InputFilter.LengthFilter(9);
+		filterArray[0] = new InputFilter.LengthFilter(7);
 		et.setFilters(filterArray);
-		et.setTextColor(Color.WHITE);
+		et.setTextColor(Color.RED);
 		et.setTextSize(TypedValue.COMPLEX_UNIT_SP,50);
 		
 		RelativeLayout.LayoutParams testLP = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -99,6 +100,7 @@ public abstract class AndroidGame extends Activity implements Game {
 	
 		layout.addView(et);
 		et.setLayoutParams(testLP);
+		et.setBackgroundColor(Color.WHITE);
 		setContentView(layout);
 		et.setVisibility(View.GONE);
 		
