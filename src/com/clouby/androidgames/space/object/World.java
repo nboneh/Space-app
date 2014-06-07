@@ -2,10 +2,15 @@ package com.clouby.androidgames.space.object;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 
+import com.badlogic.androidgames.framework.Game;
 import com.badlogic.androidgames.framework.Graphics;
 import com.badlogic.androidgames.framework.Input;
 import com.badlogic.androidgames.framework.Input.TouchEvent;
@@ -42,6 +47,8 @@ public class World {
 	private WorldObject onlineTitle;
 	private WorldObject localTitle;
 	private WorldObject backButton; 
+	private JSONArray onlineScores;
+	private Handler onlineScoreHandler; 
 
 	//Enemy Generator
 	private EnemyGenerator enemyGenerator; 
@@ -63,14 +70,14 @@ public class World {
 
 	private static World inst;
 
-	public static World getInst(Handler gameHandler){
+	public static World getInst(Game game){
 		if(inst == null)
-			inst = new World(gameHandler);
+			inst = new World(game);
 		return inst; 
 	}
 
 
-	private World(Handler gameHandler){
+	private World(Game game){
 		playerSpaceship = new Spaceship(0,0,150);
 		playerSpaceship.centerInX();
 		playerSpaceship.centerInY();
@@ -106,8 +113,18 @@ public class World {
 		submitButton.centerInX();
 
 		enemyGenerator = new EnemyGenerator(playerSpaceship);
-		
-		this.gameHandler = gameHandler; 
+
+		onlineScoreHandler = new Handler(game.getLooper()){
+			public void handleMessage(Message msg) {
+				try {
+					onlineScores = new JSONArray((String)msg.obj);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+
+		this.gameHandler = game.getHandler(); 
 
 		setWorldState(WorldState.INTRO);
 	}
@@ -146,6 +163,8 @@ public class World {
 			playerSpaceship.setAngle(0);
 			break;
 		case HIGHSCORE:
+			Settings.updateOnlineScores();
+			Settings.loadOnlineHighScores(onlineScoreHandler);
 			highScoreTitle.setState(State.INTRO);
 			onlineTitle.setState(State.INTRO);
 			localTitle.setState(State.INTRO);
@@ -284,6 +303,17 @@ public class World {
 				g.drawFont(30, i *35 + 125, 18, (i+1)  + ". " + Settings.localHighscores[i].getName(), Color.RED, Assets.font);
 				g.drawFont(140, i *35 + 125, 18,  Settings.localHighscores[i].getScore() + "", Color.RED, Assets.font);
 			}
+
+			if(onlineScores != null){
+				for(int i = 0; i < len; i++){
+					try {
+						JSONObject user = onlineScores.getJSONObject(i);
+						g.drawFont(290, i *35 + 125, 18, (i+1)  + ". " + user.getString("name"), Color.RED, Assets.font);
+						g.drawFont(410, i *35 + 125, 18, user.getInt("score") + "", Color.RED, Assets.font);
+					} catch (JSONException e) {
+					}
+				}
+			}
 		}
 	}
 
@@ -314,6 +344,7 @@ public class World {
 			msg.arg1 = AndroidGame.CLOSE_EDIT_TEXT;
 			msg.arg2 = score; 
 			gameHandler.sendMessage(msg);
+			Settings.updateOnlineScores();
 			setWorldState(WorldState.GAMEOVER);
 		}
 	}

@@ -44,6 +44,7 @@ public class LoadingScreen extends Screen{
 			Assets.basicMissleFire = a.newSound("basicmisslefire.ogg");
 			Assets.forming = a.newSound("forming.ogg");
 			Assets.deForming = a.newSound("deforming.ogg");
+			Settings.updateOnlineScores();
 
 			try {
 				Thread.sleep(2000L);

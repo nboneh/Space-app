@@ -1,6 +1,7 @@
 package com.badlogic.androidgames.framework;
 
 import android.os.Handler;
+import android.os.Looper;
 
 public interface Game {
     public Input getInput();
@@ -18,5 +19,7 @@ public interface Game {
     public Screen getStartScreen();
     
     public Handler getHandler();
+    
+    public Looper getLooper(); 
    
 }

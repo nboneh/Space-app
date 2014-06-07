@@ -8,6 +8,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -181,6 +182,11 @@ public abstract class AndroidGame extends Activity implements Game {
 	
 	public Screen getCurrentScreen() {
 		return screen;
+	}
+	
+	@Override
+	public Looper getLooper(){
+		return this.getMainLooper();
 	}
 
 	
