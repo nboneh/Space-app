@@ -28,7 +28,7 @@ public class Settings {
 	public static HighScoreContainer[] localHighscores;
 	public final static int size = 5; 
 
-	private static final String PASSWORD = "*******";
+	private static final String PASSWORD = "asaf111";
 	private static final String WEB_URL ="http://retrospacescores.appspot.com/highscore";
 
 	static 
